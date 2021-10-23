@@ -2,7 +2,6 @@ package services.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +15,7 @@ import exceptions.ErrorCode;
 import exceptions.ParkingLotException;
 import services.ServicesOffered;
 
+//Problem Statement/ Functionality
 //* Registration numbers of all cars of a particular Color.
 //* Ticket number in which a car with a given registration number is placed.
 //* Ticket numbers of all ticket where a car of a particular color is placed.
@@ -86,20 +86,19 @@ public class ServicesOfferedImpl implements ServicesOffered {
 			logInfoMessage(String.format("Parking lot created successsfully with capacity as: [%d]", parkingLotCapacity));
 
 		} catch (NumberFormatException e) {
-			throw new ParkingLotException(ErrorCode.INVALID_PARKINGLOT_SIZE.getErrorMsg(), e);
+			throw new ParkingLotException(ErrorCode.INVALID_PARKINGLOT_SIZE, e);
 		}
 	}
 
 	@Override
 	public boolean parkCar(String regNo, String color) throws ParkingLotException {
-
 		try {
 
 			if (this.parkingLotCapacity == 0) {
-				throw new ParkingLotException(ErrorCode.NO_PARKINGLOT_CREATED.getErrorMsg());
+				throw new ParkingLotException(ErrorCode.NO_PARKINGLOT_CREATED);
 
-			} else if (this.carColorRegListMap.size() == this.parkingLotCapacity) {
-				throw new ParkingLotException(ErrorCode.PARKINGLOT_FULL.getErrorMsg());
+			} else if (this.carRegNoTicketMap.size() >= this.parkingLotCapacity) {
+				throw new ParkingLotException(ErrorCode.PARKINGLOT_FULL);
 
 			} else {
 				++ticketNum;
@@ -125,21 +124,23 @@ public class ServicesOfferedImpl implements ServicesOffered {
 					this.carColorTicketListMap.put(color, new ArrayList<Integer>(Arrays.asList(ticketNum)));
 				}
 
-				// remove the slot for which ticket is provided
-				this.availableParkingLotList.remove(0);
+				//remove the slot for which ticket is provided
+				this.availableParkingLotList.remove(new Integer(ticketNum));
 
 				logInfoMessage(String.format("Map1 : %s", carColorRegListMap));
 				logInfoMessage(String.format("Map2 : %s", carRegNoTicketMap));
 				logInfoMessage(String.format("Map3 : %s", carColorTicketListMap));
 
 				logInfoMessage(String.format("Allocated ticket: [%d], slots remaining: [%d]", ticketNum,
-						this.availableParkingLotList.size()));
+						this.parkingLotCapacity - this.carRegNoTicketMap.size()));
 
 				System.out.println("\n\n");
 
 			}
-		} catch (Exception e) {
-			logExceptionMessage("Exception: ", e);
+		} catch (ParkingLotException e) {
+			// TODO Auto-generated catch block
+			logger.error(String.format("ErrorCode: [%s], ErrorMessage: [%s]",
+					e.getErrorCode().getErrorCode(), e.getErrorCode()));
 		}
 
 		return false;
@@ -151,10 +152,10 @@ public class ServicesOfferedImpl implements ServicesOffered {
 		try {
 
 			if (this.parkingLotCapacity == 0) {
-				throw new ParkingLotException(ErrorCode.NO_PARKINGLOT_CREATED.getErrorMsg());
+				throw new ParkingLotException(ErrorCode.NO_PARKINGLOT_CREATED);
 
 			} else if (!this.carRegNoTicketMap.containsKey(regNum)) {
-				throw new ParkingLotException(ErrorCode.INVALID_REG_NUM.getErrorMsg(), regNum);
+				throw new ParkingLotException(ErrorCode.INVALID_REG_NUM);
 
 			} else {
 
@@ -164,6 +165,8 @@ public class ServicesOfferedImpl implements ServicesOffered {
 
 				Car car = carsInParkingLot.stream().filter(c -> c.getRegNo().equalsIgnoreCase(regNum))
 						.collect(Collectors.toList()).get(0);
+
+				this.carsInParkingLot.remove(car);
 
 				logInfoMessage(String.format("Car obj: [%s]", car));
 
@@ -188,46 +191,41 @@ public class ServicesOfferedImpl implements ServicesOffered {
 						this.carColorTicketListMap.remove(color);
 					}
 				}
-				
-				// newTicketNum = maxticket num allocated till now + 1
-				// add newTicketNum to parkinglot
-				availableParkingLotList.add(availableParkingLotList.size() + 1);
 
 				logInfoMessage(String.format("Map1 : %s", carColorRegListMap));
 				logInfoMessage(String.format("Map2 : %s", carRegNoTicketMap));
 				logInfoMessage(String.format("Map3 : %s", carColorTicketListMap));
 
 				logInfoMessage(String.format("Removed car with ticket: [%d], slots remaining: [%d]", ticketNum,
-						this.availableParkingLotList.size()));
+						this.parkingLotCapacity - this.carRegNoTicketMap.size()));
 
 				System.out.println("\n");
 
 			}
-		} catch (Exception e) {
-			logExceptionMessage("Exception: ", e);
+		}catch (ParkingLotException e) {
+			// TODO Auto-generated catch block
+			logger.error(String.format("ErrorCode: [%s], ErrorMessage: [%s]",
+					e.getErrorCode().getErrorCode(), e.getErrorCode()));
 		}
 
 	}
 
-	//				Map<String, List<String>> carColorRegListMap;
-	//				Map<String, String> carRegNoTicketMap;
-	//				Map<String, List<String>> carColorTicketListMap;
 	@Override
-	public List<Integer> getRegistrationNumbers() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<String> getRegNumsFromColor(String color) throws ParkingLotException {
+
+		return this.carColorRegListMap.get(color);
+
 	}
 
 	@Override
-	public Integer getTicketOfRegisteredCar() {
-		// TODO Auto-generated method stub
-		return null;
+	public Integer getTicketOfRegisteredCar(String regNum) throws ParkingLotException {
+
+		return this.carRegNoTicketMap.get(regNum);
 	}
 
 	@Override
-	public List<Integer> getAllTicketsPerColor() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Integer> getAllTicketsPerColor(String color) throws ParkingLotException {
+		return this.carColorTicketListMap.get(color);
 	}
 
 	private void logInfoMessage(String message) {
@@ -244,25 +242,29 @@ public class ServicesOfferedImpl implements ServicesOffered {
 		BasicConfigurator.configure();
 		ServicesOfferedImpl offered = ServicesOfferedImpl.getInstance();
 
-		try {
-			offered.createParkingLot("5");
 
-			offered.parkCar("ABC1", "blue"); // 1 
-			offered.parkCar("ABC2", "black"); //2
-			offered.parkCar("ABC3", "red"); // 3
-			offered.parkCar("ABC4", "black"); //4
-			
-			offered.parkCar("ABC5", "blue"); //5
-			//offered.leaveCar("ABC4"); //-4
-			
-			offered.leaveCar("ABC7");
-			
-			offered.parkCar("ABC7", "blue"); //6
+		offered.createParkingLot("5");
 
-		} catch (ParkingLotException e) {
-			// TODO Auto-generated catch block
-		    System.out.println("HERE");
-			logger.error(String.format("ErrorCode: [%s], ErrorMessage: [%s]", e.getErrorCode(), e.getMessage()));
-		}
+		offered.parkCar("ABC1", "blue"); // 1 
+		offered.parkCar("ABC2", "black"); //2
+		offered.parkCar("ABC3", "red"); // 3
+		offered.parkCar("ABC4", "black"); //4
+
+		offered.parkCar("ABC5", "blue"); //5
+		//offered.leaveCar("ABC4"); //-4
+
+		offered.leaveCar("ABC7");
+		offered.leaveCar("ABC4");
+		offered.leaveCar("ABC3");
+//		offered.leaveCar("ABC1");
+
+		offered.parkCar("ABC7", "blue"); //6
+
+		offered.parkCar("ABC8", "marron"); //
+
+		System.out.println(offered.getRegNumsFromColor("blue"));
+		System.out.println(offered.getAllTicketsPerColor("blue"));
+		System.out.println(offered.getTicketOfRegisteredCar("ABC5"));
+
 	}
 }
