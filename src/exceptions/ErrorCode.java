@@ -29,4 +29,8 @@ public enum ErrorCode {
 		return errorCode;
 	}
 
+	public String toString() {
+		return "ErrorCode [errorCode=" + errorCode + ", errorMsg=" + errorMsg + "]";
+	}
+
 }
