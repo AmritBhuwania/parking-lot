@@ -42,11 +42,14 @@ public class Simulator {
 				} catch (ParkingLotException e) {
 					logger.error(e.getMessage() + ", Exception: " + e);
 				}
+
 				break;
 
+				// park a car
 			case 2:
 
 				logInfoMessage("Car is getting ready to get parked. Enter Registration number and color details of car.");
+
 				logInfoMessage("Enter the registration number of car: ");
 				String regNo = sc.next();
 				logInfoMessage("Enter the color of car: ");
@@ -54,16 +57,20 @@ public class Simulator {
 
 				boolean isCarParkedSuccess = offeredImpl.parkCar(regNo, color);
 				logInfoMessage(String.format("Is car successfully parked: %s", isCarParkedSuccess));
+
 				break;
 
+				// vacate car from parking lot
 			case 3:
 				logInfoMessage("Enter the registration number of car to vacate: ");
 				String regNum = sc.next();
 
 				boolean isCarVacatedSuccess = offeredImpl.leaveParkingLot(regNum);
 				logInfoMessage(String.format("Is car successfully vacated: %s", isCarVacatedSuccess));
+
 				break;
 
+				// Registration numbers of all cars of a particular Color.
 			case 4:
 				logInfoMessage("Enter the color to get all car registration numbers with provided color: ");
 				color = sc.next();
@@ -79,6 +86,7 @@ public class Simulator {
 
 				break;
 
+				// Ticket number in which a car with a given registration number is placed.
 			case 5:
 				logInfoMessage("Enter the registration number of car to get ticket number: ");
 				regNum = sc.next();
@@ -94,6 +102,7 @@ public class Simulator {
 
 				break;
 
+				// Ticket numbers of all ticket where a car of a particular color is placed.	
 			case 6:
 				logInfoMessage("Enter the color to get all car ticket numbers with provided color: ");
 				color = sc.next();
@@ -111,6 +120,8 @@ public class Simulator {
 
 			case -1:
 				logInfoMessage("Exiting now!");
+				sc.close();
+
 				System.exit(0);
 
 			default:
@@ -119,6 +130,7 @@ public class Simulator {
 			}
 
 		}
+
 	}
 
 	private static void logInfoMessage(String message) {
