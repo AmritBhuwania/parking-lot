@@ -97,15 +97,13 @@ public class ServicesOfferedImpl implements ServicesOffered {
 			this.carColorTicketListMap = new HashMap<String, List<Integer>>();
 
 			isParkingLotCreated = true;
-			logInfoMessage(String.format("Parking lot created successsfully with capacity as: [%d]", parkingLotCapacity));
+			logInfoMessage(String.format("Parking lot created successfully with capacity as: [%d]", parkingLotCapacity));
 
 		} catch (NumberFormatException e) {
-			throw new ParkingLotException(ErrorCode.INVALID_PARKINGLOT_SIZE);
+			throw new ParkingLotException(String.format("Invalid num %s", maxParkingLotSize), ErrorCode.INVALID_PARKINGLOT_SIZE);
 
 		} catch (ParkingLotException e) {
-			System.out.println("here");
-			logger.error(String.format("ErrorCode: [%s], ErrorMessage: [%s]",
-					e.getErrorCode().getErrorCode(), e.getErrorCode().getErrorMsg()));
+			logExceptionMessage("", e);
 
 			return false;
 
@@ -127,8 +125,10 @@ public class ServicesOfferedImpl implements ServicesOffered {
 			} else {
 
 				Car car = new Car(color, regNo);
+				
+				// check if duplicate registration num
 				if (carsInParkingLot.contains(car)) {
-					logger.info("Duplicate reg no.");
+					logger.info("Duplicate registration num");
 					throw new ParkingLotException(ErrorCode.DUPLICATE_REGISTRATION_NUMBER);
 				}
 
@@ -154,7 +154,7 @@ public class ServicesOfferedImpl implements ServicesOffered {
 					this.carColorTicketListMap.put(color, new ArrayList<Integer>(Arrays.asList(ticketNum)));
 				}
 
-				//remove the slot for which ticket is provided
+				//remove the ticket if car is parked
 				this.availableParkingLotList.remove(new Integer(ticketNum));
 
 				logInfoMessage(String.format("Map1 : %s", carColorRegListMap));
@@ -168,8 +168,7 @@ public class ServicesOfferedImpl implements ServicesOffered {
 
 		} catch (ParkingLotException e) {
 			// TODO Auto-generated catch block
-			logger.error(String.format("ErrorCode: [%s], ErrorMessage: [%s]",
-					e.getErrorCode().getErrorCode(), e.getErrorCode().getErrorMsg()));
+			logExceptionMessage(e);
 
 			return false;
 		}
@@ -179,7 +178,7 @@ public class ServicesOfferedImpl implements ServicesOffered {
 	}
 
 	@Override
-	public boolean leaveCar(String regNum) throws ParkingLotException {
+	public boolean leaveParkingLot(String regNum) throws ParkingLotException {
 
 		try {
 
@@ -233,9 +232,7 @@ public class ServicesOfferedImpl implements ServicesOffered {
 
 			}
 		} catch (ParkingLotException e) {
-			// TODO Auto-generated catch block
-			logger.error(String.format("ErrorCode: [%s], ErrorMessage: [%s]",
-					e.getErrorCode().getErrorCode(), e.getErrorCode().getErrorMsg()));
+			logger.error(e);
 
 			return false;
 		}
@@ -260,14 +257,6 @@ public class ServicesOfferedImpl implements ServicesOffered {
 	@Override
 	public List<Integer> getAllTicketsPerColor(String color) throws ParkingLotException {
 		return this.carColorTicketListMap.get(color);
-	}
-
-	private void logInfoMessage(String message) {
-		logger.info(String.format("%s%s%s",Thread.currentThread().getName(), "\t", message));
-	}
-
-	private void logExceptionMessage(String message, Exception e) {
-		logger.error(String.format("%s%s%s", Thread.currentThread().getName(), "\t", message), e);
 	}
 
 	// Testing Purpose
@@ -306,4 +295,17 @@ public class ServicesOfferedImpl implements ServicesOffered {
 		logger.info("Ticket number of given register num is: " + offered.getTicketOfRegisteredCar("ABC3"));
 
 	}
+	
+	private void logInfoMessage(String message) {
+		logger.info(String.format("%s%s%s",Thread.currentThread().getName(), "\t", message));
+	}
+
+	private void logExceptionMessage(String message, Exception e) {
+		logger.error(String.format("%s%s%s", Thread.currentThread().getName(), "\t", message), e);
+	}
+	
+	private void logExceptionMessage(Exception e) {
+		logger.error(String.format("%s%s%s", Thread.currentThread().getName(), "\t", e));
+	}
+	
 }
