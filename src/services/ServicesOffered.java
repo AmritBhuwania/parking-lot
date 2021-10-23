@@ -10,7 +10,7 @@ public interface ServicesOffered {
 	
 	boolean parkCar(String regNo, String color) throws ParkingLotException;
 	
-	boolean leaveCar(String regNum) throws ParkingLotException;
+	boolean leaveParkingLot(String regNum) throws ParkingLotException;
 	
 	List<String> getRegNumsFromColor(String color) throws ParkingLotException;
 	
