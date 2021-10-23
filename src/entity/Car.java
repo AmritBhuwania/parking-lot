@@ -4,7 +4,7 @@ public class Car {
 
 	private String color;
 	private String regNo;
-	
+
 	public Car() {};
 
 	public Car(String color, String regNo) {
@@ -28,6 +28,8 @@ public class Car {
 		this.regNo = regNo;
 	}
 
+	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -39,6 +41,7 @@ public class Car {
 
 	@Override
 	public boolean equals(Object obj) {
+		
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -46,19 +49,22 @@ public class Car {
 		if (getClass() != obj.getClass())
 			return false;
 		Car other = (Car) obj;
-		if (color == null) {
-			if (other.color != null)
-				return false;
-		} else if (!color.equals(other.color))
-			return false;
+		
 		if (regNo == null) {
 			if (other.regNo != null)
 				return false;
-		} else if (!regNo.equals(other.regNo))
+		} else if (!regNo.equalsIgnoreCase(other.regNo))
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "Car [color=" + color + ", regNo=" + regNo + "]";
+	}
 	
 	
+
+
 
 }

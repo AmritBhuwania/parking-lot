@@ -1,6 +1,6 @@
 package exceptions;
 
-public class ParkingLotException extends Exception {
+public class ParkingLotException extends RuntimeException {
 
 	private String errorCode;
 	private Object[] errorStack;
