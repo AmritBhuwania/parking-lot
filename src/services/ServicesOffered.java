@@ -8,7 +8,7 @@ public interface ServicesOffered {
 	
 	void createParkingLot(String parkingLotSize) throws ParkingLotException ;
 	
-	boolean parkCar() throws ParkingLotException ;
+	boolean parkCar(String regNo, String color) throws ParkingLotException ;
 	
 	List<Integer> getRegistrationNumbers() throws ParkingLotException ;
 	
