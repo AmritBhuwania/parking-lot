@@ -2,9 +2,7 @@ package exceptions;
 
 public class ParkingLotException extends RuntimeException {
 
-	private String errorCode;
-	private Object[] errorStack;
-
+	private ErrorCode errorCode;
 
 	public ParkingLotException(String message)
 	{
@@ -16,38 +14,23 @@ public class ParkingLotException extends RuntimeException {
 		super(message, throwable);
 	}
 
-	public ParkingLotException(String message, String errorCode) {
-		super(message);
+	public ParkingLotException(ErrorCode errorCode) {
+		super();
 		this.errorCode = errorCode;
 	}
 
-	public ParkingLotException(String message, String errorCode, Object[] errorStack) {
-		super(message);
-		this.errorCode = errorCode;
-		this.errorStack = errorStack;
-	}
-
-	public ParkingLotException(String message, String errorCode, Throwable throwable)
+	public ParkingLotException(ErrorCode errorCode, Throwable throwable)
 	{
-		super(message, throwable);
+		super(throwable);
 		this.setErrorCode(errorCode);
 	}
-
-	public String getErrorCode() {
+	
+	public ErrorCode getErrorCode() {
 		return errorCode;
 	}
 
-	public void setErrorCode(String errorCode) {
+	public void setErrorCode(ErrorCode errorCode) {
 		this.errorCode = errorCode;
 	}
-
-	public Object[] getErrorStack() {
-		return errorStack;
-	}
-
-	public void setErrorStack(Object[] errorStack) {
-		this.errorStack = errorStack;
-	}
-
 
 }

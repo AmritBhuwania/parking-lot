@@ -32,6 +32,7 @@ public class ServicesOfferedImpl implements ServicesOffered {
 	// initial capacity as 0
 	private int parkingLotCapacity = 0;
 	private static int ticketNum = 0;
+	private static boolean isParkingLotCreated = false;
 
 	private static ServicesOfferedImpl servicesImplInstance;
 
@@ -66,11 +67,23 @@ public class ServicesOfferedImpl implements ServicesOffered {
 
 
 	@Override
-	public void createParkingLot(String lotCount) throws ParkingLotException {
+	public boolean createParkingLot(String maxParkingLotSize) throws ParkingLotException {
 
 		try {
 
-			this.parkingLotCapacity = Integer.parseInt(lotCount);
+			int capacity = Integer.parseInt(maxParkingLotSize);
+
+			// check if parking lot is already created
+			if (isParkingLotCreated) {
+				throw new ParkingLotException(ErrorCode.PARKINGLOT_ALREADY_CREATED);
+			} else {
+				this.parkingLotCapacity = capacity;
+			}
+
+			// check if parking lot is created only with positive integers
+			if (capacity < 1) {
+				throw new ParkingLotException(ErrorCode.NON_POSITIVE_PARKINGLOT_SIZE);
+			}
 
 			this.availableParkingLotList = new ArrayList<Integer>();
 			this.carsInParkingLot = new ArrayList<Car>();
@@ -83,11 +96,22 @@ public class ServicesOfferedImpl implements ServicesOffered {
 			this.carRegNoTicketMap = new HashMap<String, Integer>();
 			this.carColorTicketListMap = new HashMap<String, List<Integer>>();
 
+			isParkingLotCreated = true;
 			logInfoMessage(String.format("Parking lot created successsfully with capacity as: [%d]", parkingLotCapacity));
 
 		} catch (NumberFormatException e) {
-			throw new ParkingLotException(ErrorCode.INVALID_PARKINGLOT_SIZE, e);
+			throw new ParkingLotException(ErrorCode.INVALID_PARKINGLOT_SIZE);
+
+		} catch (ParkingLotException e) {
+			System.out.println("here");
+			logger.error(String.format("ErrorCode: [%s], ErrorMessage: [%s]",
+					e.getErrorCode().getErrorCode(), e.getErrorCode().getErrorMsg()));
+
+			return false;
+
 		}
+
+		return true;
 	}
 
 	@Override
@@ -101,9 +125,15 @@ public class ServicesOfferedImpl implements ServicesOffered {
 				throw new ParkingLotException(ErrorCode.PARKINGLOT_FULL);
 
 			} else {
-				++ticketNum;
 
 				Car car = new Car(color, regNo);
+				if (carsInParkingLot.contains(car)) {
+					logger.info("Duplicate reg no.");
+					throw new ParkingLotException(ErrorCode.DUPLICATE_REGISTRATION_NUMBER);
+				}
+
+				++ticketNum;
+
 				this.carsInParkingLot.add(car);
 
 				logInfoMessage(String.format("Ticket number is: [%d]", ticketNum));
@@ -134,20 +164,22 @@ public class ServicesOfferedImpl implements ServicesOffered {
 				logInfoMessage(String.format("Allocated ticket: [%d], slots remaining: [%d]", ticketNum,
 						this.parkingLotCapacity - this.carRegNoTicketMap.size()));
 
-				System.out.println("\n\n");
-
 			}
+
 		} catch (ParkingLotException e) {
 			// TODO Auto-generated catch block
 			logger.error(String.format("ErrorCode: [%s], ErrorMessage: [%s]",
-					e.getErrorCode().getErrorCode(), e.getErrorCode()));
+					e.getErrorCode().getErrorCode(), e.getErrorCode().getErrorMsg()));
+
+			return false;
 		}
 
-		return false;
+		return true;
+
 	}
 
 	@Override
-	public void leaveCar(String regNum) throws ParkingLotException {
+	public boolean leaveCar(String regNum) throws ParkingLotException {
 
 		try {
 
@@ -199,14 +231,16 @@ public class ServicesOfferedImpl implements ServicesOffered {
 				logInfoMessage(String.format("Removed car with ticket: [%d], slots remaining: [%d]", ticketNum,
 						this.parkingLotCapacity - this.carRegNoTicketMap.size()));
 
-				System.out.println("\n");
-
 			}
-		}catch (ParkingLotException e) {
+		} catch (ParkingLotException e) {
 			// TODO Auto-generated catch block
 			logger.error(String.format("ErrorCode: [%s], ErrorMessage: [%s]",
-					e.getErrorCode().getErrorCode(), e.getErrorCode()));
+					e.getErrorCode().getErrorCode(), e.getErrorCode().getErrorMsg()));
+
+			return false;
 		}
+
+		return true;
 
 	}
 
@@ -242,29 +276,34 @@ public class ServicesOfferedImpl implements ServicesOffered {
 		BasicConfigurator.configure();
 		ServicesOfferedImpl offered = ServicesOfferedImpl.getInstance();
 
+		//offered.createParkingLot("1");
+		try {
+			offered.createParkingLot("2.5");
+		} catch (Exception e) {
+			logger.error(String.format("ErrorCode: [%s], ErrorMessage: [%s]",
+					((ParkingLotException) e).getErrorCode().getErrorCode(), ((ParkingLotException) e).getErrorCode().getErrorMsg()));
+		}
 
-		offered.createParkingLot("5");
+		logger.info("Is car parked successfully?: " + offered.parkCar("ABC1", "blue")); 
+		logger.info("Is car parked successfully?: " + offered.parkCar("ABC1", "black"));
+		logger.info("Is car parked successfully?: " + offered.parkCar("ABC3", "red"));
+		//		offered.parkCar("ABC4", "black");
+		//		offered.parkCar("ABC4", "blue");
+		//
+		//		offered.parkCar("ABC5", "blue");
+		//		offered.leaveCar("ABC4");
+		//		offered.leaveCar("ABC7");
+		//		offered.leaveCar("ABC4");
+		//		offered.leaveCar("ABC3");
+		//		offered.leaveCar("ABC1");
+		//
+		//		offered.parkCar("ABC7", "blue");
+		//
+		//		offered.parkCar("ABC8", "marron");
 
-		offered.parkCar("ABC1", "blue"); // 1 
-		offered.parkCar("ABC2", "black"); //2
-		offered.parkCar("ABC3", "red"); // 3
-		offered.parkCar("ABC4", "black"); //4
-
-		offered.parkCar("ABC5", "blue"); //5
-		//offered.leaveCar("ABC4"); //-4
-
-		offered.leaveCar("ABC7");
-		offered.leaveCar("ABC4");
-		offered.leaveCar("ABC3");
-//		offered.leaveCar("ABC1");
-
-		offered.parkCar("ABC7", "blue"); //6
-
-		offered.parkCar("ABC8", "marron"); //
-
-		System.out.println(offered.getRegNumsFromColor("blue"));
-		System.out.println(offered.getAllTicketsPerColor("blue"));
-		System.out.println(offered.getTicketOfRegisteredCar("ABC5"));
+		logger.info("Car registration nums with given color: " + offered.getRegNumsFromColor("blue"));
+		logger.info("Ticket nums with given color:" + offered.getAllTicketsPerColor("blue"));
+		logger.info("Ticket number of given register num is: " + offered.getTicketOfRegisteredCar("ABC3"));
 
 	}
 }

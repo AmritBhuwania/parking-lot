@@ -6,17 +6,17 @@ import exceptions.ParkingLotException;
 
 public interface ServicesOffered {
 	
-	void createParkingLot(String parkingLotSize) throws ParkingLotException;
+	boolean createParkingLot(String parkingLotSize) throws ParkingLotException;
 	
 	boolean parkCar(String regNo, String color) throws ParkingLotException;
 	
-	void leaveCar(String regNum) throws ParkingLotException;
+	boolean leaveCar(String regNum) throws ParkingLotException;
 	
-	List<Integer> getRegistrationNumbers() throws ParkingLotException;
+	List<String> getRegNumsFromColor(String color) throws ParkingLotException;
 	
-	Integer getTicketOfRegisteredCar() throws ParkingLotException;
+	Integer getTicketOfRegisteredCar(String regNum) throws ParkingLotException;
 	
-	List<Integer> getAllTicketsPerColor() throws ParkingLotException;
+	List<Integer> getAllTicketsPerColor(String color) throws ParkingLotException;
 	
 	
 

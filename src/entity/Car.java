@@ -27,16 +27,15 @@ public class Car {
 	public void setRegNo(String regNo) {
 		this.regNo = regNo;
 	}
-
 	
 
+	/*
+	 * Customized hashcode and equals method
+	 */
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((color == null) ? 0 : color.hashCode());
-		result = prime * result + ((regNo == null) ? 0 : regNo.hashCode());
-		return result;
+		
+		return ((regNo == null) ? 0 : regNo.hashCode());
 	}
 
 	@Override
@@ -62,9 +61,5 @@ public class Car {
 	public String toString() {
 		return "Car [color=" + color + ", regNo=" + regNo + "]";
 	}
-	
-	
-
-
 
 }
