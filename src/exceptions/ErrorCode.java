@@ -11,7 +11,9 @@ public enum ErrorCode {
 	PARKINGLOT_FULL(3, "Sorry! Parking lot is already fully occupied."),
 
 	INVALID_REG_NUM(4, "No such car parked with this registration number."),
-	DUPLICATE_REGISTRATION_NUMBER(4, "A car with same registration number already exists. Illegal reg num alert!");
+	DUPLICATE_REGISTRATION_NUMBER(4, "A car with same registration number already exists. Illegal reg num alert!"),
+	
+	PARKINGLOT_EMPTY(5, "Parking lot is empty.");
 
 	private final String errorMsg;
 	private final int errorCode;
