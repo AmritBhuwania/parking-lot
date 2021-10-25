@@ -7,7 +7,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import exceptions.ParkingLotException;
-import services.impl.ServicesOfferedImpl;
+import services.impl.ParkingLot;
 
 public class Simulator {
 
@@ -19,7 +19,7 @@ public class Simulator {
 
 		Scanner sc = new Scanner(System.in);
 
-		ServicesOfferedImpl offeredImpl = ServicesOfferedImpl.getInstance();
+		ParkingLot parkingLot = ParkingLot.getInstance();
 
 		logInfoMessage("Enter a value: ");
 		int userInput = sc.nextInt();
@@ -38,7 +38,7 @@ public class Simulator {
 				String maxParkingLotSize = sc.next();
 
 				try {
-					offeredImpl.createParkingLot(maxParkingLotSize);
+					parkingLot.createParkingLot(maxParkingLotSize);
 				} catch (ParkingLotException e) {
 					logger.error(e.getMessage() + ", Exception: " + e);
 				}
@@ -55,7 +55,7 @@ public class Simulator {
 				logInfoMessage("Enter the color of car: ");
 				String color = sc.next();
 
-				boolean isCarParkedSuccess = offeredImpl.parkCar(regNo, color);
+				boolean isCarParkedSuccess = parkingLot.parkCar(regNo, color);
 				logInfoMessage(String.format("Is car successfully parked: %s", isCarParkedSuccess));
 
 				break;
@@ -65,7 +65,7 @@ public class Simulator {
 				logInfoMessage("Enter the registration number of car to vacate: ");
 				String regNum = sc.next();
 
-				boolean isCarVacatedSuccess = offeredImpl.leaveParkingLot(regNum);
+				boolean isCarVacatedSuccess = parkingLot.leaveParkingLot(regNum);
 				logInfoMessage(String.format("Is car successfully vacated: %s", isCarVacatedSuccess));
 
 				break;
@@ -75,7 +75,7 @@ public class Simulator {
 				logInfoMessage("Enter the color to get all car registration numbers with provided color: ");
 				color = sc.next();
 
-				List<String> regNums = offeredImpl.getRegNumsFromColor(color);
+				List<String> regNums = parkingLot.getRegNumsFromColor(color);
 
 				if (null != regNums) {
 					logInfoMessage(String.format("Car registration numbers with color %s are: %s",
@@ -91,11 +91,11 @@ public class Simulator {
 				logInfoMessage("Enter the registration number of car to get ticket number: ");
 				regNum = sc.next();
 
-				Integer ticketNum = offeredImpl.getTicketOfRegisteredCar(regNum);
+				Integer ticketNum = parkingLot.getTicketOfRegisteredCar(regNum);
 
 				if (null != ticketNum) {
 					logInfoMessage(String.format("Car ticket number with registration number %s is: %s",
-							regNum, offeredImpl.getTicketOfRegisteredCar(regNum)));
+							regNum, parkingLot.getTicketOfRegisteredCar(regNum)));
 				} else {
 					logInfoMessage(String.format("No cars is yet parked with registration num as: %s", regNum));
 				}
@@ -107,7 +107,7 @@ public class Simulator {
 				logInfoMessage("Enter the color to get all car ticket numbers with provided color: ");
 				color = sc.next();
 
-				List<Integer> ticketNums = offeredImpl.getAllTicketsPerColor(color);
+				List<Integer> ticketNums = parkingLot.getAllTicketsPerColor(color);
 
 				if (null != ticketNums) {
 					logInfoMessage(String.format("Car ticket numbers with color: %s are %s",

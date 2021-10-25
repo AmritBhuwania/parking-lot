@@ -25,7 +25,7 @@ import services.ServicesOffered;
 //- park cars in it
 //- run the above specified queries
 
-public class ServicesOfferedImpl implements ServicesOffered {
+public class ParkingLot implements ServicesOffered {
 
 	private static Logger logger = Logger.getLogger(ServicesOffered.class);
 
@@ -34,7 +34,7 @@ public class ServicesOfferedImpl implements ServicesOffered {
 	private static int ticketNum = 0;
 	private static boolean isParkingLotCreated = false;
 
-	private static ServicesOfferedImpl servicesImplInstance;
+	private static ParkingLot parkingLotInstance;
 
 	List<Integer> availableParkingLotList;
 
@@ -50,19 +50,19 @@ public class ServicesOfferedImpl implements ServicesOffered {
 	Map<String, List<Integer>> carColorTicketListMap;
 
 	// singleton pattern
-	public static ServicesOfferedImpl getInstance() {
+	public static ParkingLot getInstance() {
 
-		if (servicesImplInstance == null) {
+		if (parkingLotInstance == null) {
 
-			synchronized (ServicesOfferedImpl.class) {
+			synchronized (ParkingLot.class) {
 
-				if (servicesImplInstance == null) {
-					servicesImplInstance = new ServicesOfferedImpl();
+				if (parkingLotInstance == null) {
+					parkingLotInstance = new ParkingLot();
 				}
 			}
 		}
 
-		return servicesImplInstance;
+		return parkingLotInstance;
 	}
 
 
@@ -103,7 +103,7 @@ public class ServicesOfferedImpl implements ServicesOffered {
 			throw new ParkingLotException(String.format("Invalid num %s", maxParkingLotSize), ErrorCode.INVALID_PARKINGLOT_SIZE);
 
 		} catch (ParkingLotException e) {
-			logExceptionMessage("", e);
+			logExceptionMessage(e);
 
 			return false;
 
@@ -263,7 +263,7 @@ public class ServicesOfferedImpl implements ServicesOffered {
 	public static void main(String[] args) {
 
 		BasicConfigurator.configure();
-		ServicesOfferedImpl offered = ServicesOfferedImpl.getInstance();
+		ParkingLot offered = ParkingLot.getInstance();
 
 		//offered.createParkingLot("1");
 		try {
