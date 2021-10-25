@@ -36,7 +36,7 @@ public class ParkingLot implements ServicesOffered {
 
 	private static ParkingLot parkingLotInstance;
 
-	List<Integer> availableParkingLotList;
+	//List<Integer> availableParkingLotList;
 
 	List<Car> carsInParkingLot = new ArrayList<Car>();
 
@@ -85,12 +85,12 @@ public class ParkingLot implements ServicesOffered {
 				throw new ParkingLotException(ErrorCode.NON_POSITIVE_PARKINGLOT_SIZE);
 			}
 
-			this.availableParkingLotList = new ArrayList<Integer>();
+			//this.availableParkingLotList = new ArrayList<Integer>();
 			this.carsInParkingLot = new ArrayList<Car>();
 
-			for (int i = 1; i <= parkingLotCapacity; ++i) {
-				availableParkingLotList.add(i);
-			}
+			//			for (int i = 1; i <= parkingLotCapacity; ++i) {
+			//				availableParkingLotList.add(i);
+			//			}
 
 			this.carColorRegListMap = new HashMap<String, List<String>>();
 			this.carRegNoTicketMap = new HashMap<String, Integer>();
@@ -125,7 +125,7 @@ public class ParkingLot implements ServicesOffered {
 			} else {
 
 				Car car = new Car(color, regNo);
-				
+
 				// check if duplicate registration num
 				if (carsInParkingLot.contains(car)) {
 					logger.info("Duplicate registration num");
@@ -155,7 +155,7 @@ public class ParkingLot implements ServicesOffered {
 				}
 
 				//remove the ticket if car is parked
-				this.availableParkingLotList.remove(new Integer(ticketNum));
+				//this.availableParkingLotList.remove(new Integer(ticketNum));
 
 				logInfoMessage(String.format("Map1 : %s", carColorRegListMap));
 				logInfoMessage(String.format("Map2 : %s", carRegNoTicketMap));
@@ -181,9 +181,13 @@ public class ParkingLot implements ServicesOffered {
 	public boolean leaveParkingLot(String regNum) throws ParkingLotException {
 
 		try {
-
 			if (this.parkingLotCapacity == 0) {
-				throw new ParkingLotException(ErrorCode.NO_PARKINGLOT_CREATED);
+
+				if (isParkingLotCreated) {
+					throw new ParkingLotException(ErrorCode.NO_PARKINGLOT_CREATED);
+				} else {
+					throw new ParkingLotException(ErrorCode.PARKINGLOT_EMPTY);
+				}
 
 			} else if (!this.carRegNoTicketMap.containsKey(regNum)) {
 				throw new ParkingLotException(ErrorCode.INVALID_REG_NUM);
@@ -267,7 +271,7 @@ public class ParkingLot implements ServicesOffered {
 
 		//offered.createParkingLot("1");
 		try {
-			offered.createParkingLot("2.5");
+			offered.createParkingLot("5");
 		} catch (Exception e) {
 			logger.error(String.format("ErrorCode: [%s], ErrorMessage: [%s]",
 					((ParkingLotException) e).getErrorCode().getErrorCode(), ((ParkingLotException) e).getErrorCode().getErrorMsg()));
@@ -295,17 +299,13 @@ public class ParkingLot implements ServicesOffered {
 		logger.info("Ticket number of given register num is: " + offered.getTicketOfRegisteredCar("ABC3"));
 
 	}
-	
+
 	private void logInfoMessage(String message) {
 		logger.info(String.format("%s%s%s",Thread.currentThread().getName(), "\t", message));
 	}
 
-	private void logExceptionMessage(String message, Exception e) {
-		logger.error(String.format("%s%s%s", Thread.currentThread().getName(), "\t", message), e);
-	}
-	
 	private void logExceptionMessage(Exception e) {
 		logger.error(String.format("%s%s%s", Thread.currentThread().getName(), "\t", e));
 	}
-	
+
 }
