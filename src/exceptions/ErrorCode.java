@@ -13,7 +13,9 @@ public enum ErrorCode {
 	INVALID_REG_NUM(4, "No such car parked with this registration number."),
 	DUPLICATE_REGISTRATION_NUMBER(4, "A car with same registration number already exists. Illegal reg num alert!"),
 	
-	PARKINGLOT_EMPTY(5, "Parking lot is empty.");
+	PARKINGLOT_EMPTY(5, "Parking lot is empty."),
+	
+	INVALID_CAR_DETAILS(6, "Car is either missing the reg number of color");
 
 	private final String errorMsg;
 	private final int errorCode;

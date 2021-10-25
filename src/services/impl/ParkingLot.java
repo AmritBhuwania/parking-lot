@@ -38,6 +38,7 @@ public class ParkingLot implements ServicesOffered {
 
 	//List<Integer> availableParkingLotList;
 
+	// store all car object that are parked in the parking lot
 	List<Car> carsInParkingLot = new ArrayList<Car>();
 
 	// Map of Color and List of Registration numbers
@@ -73,30 +74,18 @@ public class ParkingLot implements ServicesOffered {
 
 			int capacity = Integer.parseInt(maxParkingLotSize);
 
-			// check if parking lot is already created
-			if (isParkingLotCreated) {
-				throw new ParkingLotException(ErrorCode.PARKINGLOT_ALREADY_CREATED);
-			} else {
-				this.parkingLotCapacity = capacity;
-			}
-
 			// check if parking lot is created only with positive integers
 			if (capacity < 1) {
 				throw new ParkingLotException(ErrorCode.NON_POSITIVE_PARKINGLOT_SIZE);
 			}
 
-			//this.availableParkingLotList = new ArrayList<Integer>();
-			this.carsInParkingLot = new ArrayList<Car>();
+			// check if parking lot is already created
+			if (isParkingLotCreated) {
+				throw new ParkingLotException(ErrorCode.PARKINGLOT_ALREADY_CREATED);
+			} 
 
-			//			for (int i = 1; i <= parkingLotCapacity; ++i) {
-			//				availableParkingLotList.add(i);
-			//			}
+			init(capacity);
 
-			this.carColorRegListMap = new HashMap<String, List<String>>();
-			this.carRegNoTicketMap = new HashMap<String, Integer>();
-			this.carColorTicketListMap = new HashMap<String, List<Integer>>();
-
-			isParkingLotCreated = true;
 			logInfoMessage(String.format("Parking lot created successfully with capacity as: [%d]", parkingLotCapacity));
 
 		} catch (NumberFormatException e) {
@@ -112,6 +101,26 @@ public class ParkingLot implements ServicesOffered {
 		return true;
 	}
 
+	private void init(int capacity) {
+
+		this.parkingLotCapacity = capacity;
+
+		this.carsInParkingLot = new ArrayList<Car>();
+		this.carColorRegListMap = new HashMap<String, List<String>>();
+		this.carRegNoTicketMap = new HashMap<String, Integer>();
+		this.carColorTicketListMap = new HashMap<String, List<Integer>>();
+
+		isParkingLotCreated = true;
+
+		//		this.availableParkingLotList = new ArrayList<Integer>();
+		//
+		//		for (int i = 1; i <= parkingLotCapacity; ++i) {
+		//			availableParkingLotList.add(i);
+		//		}
+
+	}
+
+
 	@Override
 	public boolean parkCar(String regNo, String color) throws ParkingLotException {
 		try {
@@ -124,7 +133,12 @@ public class ParkingLot implements ServicesOffered {
 
 			} else {
 
-				Car car = new Car(color, regNo);
+				Car car;
+				if (null != color && null != regNo) {
+					car = new Car(color, regNo);
+				} else {
+					throw new ParkingLotException(ErrorCode.INVALID_CAR_DETAILS);
+				}
 
 				// check if duplicate registration num
 				if (carsInParkingLot.contains(car)) {
@@ -157,9 +171,7 @@ public class ParkingLot implements ServicesOffered {
 				//remove the ticket if car is parked
 				//this.availableParkingLotList.remove(new Integer(ticketNum));
 
-				logInfoMessage(String.format("Map1 : %s", carColorRegListMap));
-				logInfoMessage(String.format("Map2 : %s", carRegNoTicketMap));
-				logInfoMessage(String.format("Map3 : %s", carColorTicketListMap));
+				printAllMaps();
 
 				logInfoMessage(String.format("Allocated ticket: [%d], slots remaining: [%d]", ticketNum,
 						this.parkingLotCapacity - this.carRegNoTicketMap.size()));
@@ -227,9 +239,7 @@ public class ParkingLot implements ServicesOffered {
 					}
 				}
 
-				logInfoMessage(String.format("Map1 : %s", carColorRegListMap));
-				logInfoMessage(String.format("Map2 : %s", carRegNoTicketMap));
-				logInfoMessage(String.format("Map3 : %s", carColorTicketListMap));
+				printAllMaps();
 
 				logInfoMessage(String.format("Removed car with ticket: [%d], slots remaining: [%d]", ticketNum,
 						this.parkingLotCapacity - this.carRegNoTicketMap.size()));
@@ -262,6 +272,15 @@ public class ParkingLot implements ServicesOffered {
 	public List<Integer> getAllTicketsPerColor(String color) throws ParkingLotException {
 		return this.carColorTicketListMap.get(color);
 	}
+	
+	private void printAllMaps() {
+
+		logInfoMessage(String.format("Map1 : %s", carColorRegListMap));
+		logInfoMessage(String.format("Map2 : %s", carRegNoTicketMap));
+		logInfoMessage(String.format("Map3 : %s", carColorTicketListMap));
+
+	}
+
 
 	// Testing Purpose
 	public static void main(String[] args) {
@@ -276,6 +295,8 @@ public class ParkingLot implements ServicesOffered {
 			logger.error(String.format("ErrorCode: [%s], ErrorMessage: [%s]",
 					((ParkingLotException) e).getErrorCode().getErrorCode(), ((ParkingLotException) e).getErrorCode().getErrorMsg()));
 		}
+
+		//logger.info("Is car parked successfully?: " + offered.parkCar("ABC1", "blue")); 
 
 		logger.info("Is car parked successfully?: " + offered.parkCar("ABC1", "blue")); 
 		logger.info("Is car parked successfully?: " + offered.parkCar("ABC1", "black"));
