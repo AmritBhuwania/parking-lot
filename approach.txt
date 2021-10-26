@@ -1,0 +1,15 @@
+Approach/Though process of why certain things were designed/coded in the way they are:
+
+1. A singletion class for parking lot(the main class) so that the instantiation of a class happens only once and all the object orchaestration happens ideally through it.
+
+2. Used 3 maps for each of the three requirements/queries
+
+3. Used a list of car which contains all the car objects parked at a given instant of time.
+
+4. Have modified the hashcode and equals methods for specific usage of duplicacy check(No 2 cars will ideally have same registration num even if the color is different)
+
+5. Use of a static boolean `isParkingLotCreated` which helps in determing if the parking lot is already created.
+
+6. Use of static integer `ticketNum` so that the ticket numbers are always assigned incrementally and no 2 cars are assigned same ticket at any point of time. 
+
+7. Handled edge cases.
